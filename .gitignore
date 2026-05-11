@@ -4,3 +4,7 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+sessions/
+# ignore real tdata content but keep folder structure
+accounts/*/tdata/*
+!accounts/*/tdata/.gitkeep
