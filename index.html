@@ -75,7 +75,7 @@
 
         /* ── Ticket card ── */
         .ticket-wrapper {
-            padding: 0 12px 32px;
+            padding: 0 8px 36px;
             flex: 1;
         }
 
@@ -89,7 +89,7 @@
         /* ── Ticket dark banner ── */
         .ticket-banner {
             background: #0f1e3d;
-            padding: 16px 22px;
+            padding: 18px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -97,20 +97,20 @@
 
         .ticket-type {
             color: #ffffff;
-            font-size: 19px;
+            font-size: 20px;
             font-weight: 700;
         }
 
         .ticket-price {
             color: #ffffff;
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 800;
         }
 
         /* ── Ticket body ── */
         .ticket-body {
             background: #f5eeff;
-            padding: 28px 20px 22px;
+            padding: 34px 26px 28px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -119,7 +119,7 @@
 
         /* ── QR Code ── */
         .qr-wrapper {
-            margin-bottom: 22px;
+            margin-bottom: 28px;
         }
 
         #qr-canvas {
@@ -129,19 +129,19 @@
 
         /* ── Route ── */
         .route {
-            font-size: 21px;
+            font-size: 23px;
             font-weight: 800;
             color: #0f1e3d;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 14px;
             line-height: 1.25;
         }
 
         /* ── Valid from ── */
         .valid-from {
-            font-size: 14px;
+            font-size: 15px;
             color: #6b7280;
-            margin-bottom: 18px;
+            margin-bottom: 22px;
             text-align: center;
         }
 
@@ -156,8 +156,8 @@
             position: relative;
             background: linear-gradient(135deg, #d6186a 0%, #f0308a 40%, #e8207e 60%, #c9115f 100%);
             border-radius: 10px;
-            height: 60px;
-            margin-bottom: 16px;
+            height: 72px;
+            margin-bottom: 20px;
             overflow: hidden;
             display: flex;
             align-items: center;
@@ -216,10 +216,10 @@
         }
 
         .current-time {
-            font-size: 30px;
+            font-size: 36px;
             font-weight: 800;
             color: #ffffff;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             position: relative;
             z-index: 2;
             text-shadow: 0 1px 6px rgba(0,0,0,0.2);
@@ -231,17 +231,17 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            margin-bottom: 16px;
+            margin-bottom: 22px;
             padding: 0 2px;
         }
 
         .expires-label {
-            font-size: 14px;
+            font-size: 15px;
             color: #6b7280;
         }
 
         .expires-value {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 700;
             color: #1f2937;
             letter-spacing: 0.5px;
@@ -250,13 +250,13 @@
         /* ── Ticket ID ── */
         .ticket-id {
             background: #e4d9f5;
-            border-radius: 10px;
-            padding: 11px 16px;
-            font-size: 12.5px;
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 13px;
             color: #4b5563;
             width: 100%;
             text-align: center;
-            margin-bottom: 18px;
+            margin-bottom: 24px;
             letter-spacing: 0.3px;
             font-family: 'SF Mono', 'Fira Mono', monospace;
         }
@@ -264,17 +264,17 @@
         /* ── More details ── */
         .more-details {
             color: #10a37f;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 4px;
             cursor: pointer;
         }
 
         .more-details-arrow {
-            font-size: 18px;
+            font-size: 20px;
             line-height: 1;
             margin-top: 1px;
         }
@@ -358,7 +358,7 @@
         // Generate QR using a simple approach via data URI trick
         // We'll encode using a small self-contained QR library
 
-        const size = 200;
+        const size = 224;
         canvasEl.width = size;
         canvasEl.height = size;
         const ctx = canvasEl.getContext('2d');
