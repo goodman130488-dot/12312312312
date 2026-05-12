@@ -80,17 +80,13 @@
             position: relative;
         }
 
-        /* ── Dark pill banner (floating above card) ── */
+        /* ── Dark banner across top of card ── */
         .ticket-banner-pill {
             background: #0f1e3d;
-            border-radius: 20px;
-            padding: 14px 26px;
+            padding: 16px 22px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 0 4px -14px;
-            position: relative;
-            z-index: 2;
         }
 
         .ticket-type {
@@ -113,20 +109,10 @@
             position: relative;
         }
 
-        /* ── Thin progress indicator inside white card ── */
-        .progress-bar {
-            height: 3px;
-            width: 38%;
-            background: #ffffff;
-            border-radius: 2px;
-            margin: 22px 0 0 18px;
-            box-shadow: 0 0 0 0.5px rgba(0,0,0,0.04);
-        }
-
         /* ── Ticket body ── */
         .ticket-body {
             background: #f5eeff;
-            padding: 18px 26px 28px;
+            padding: 24px 26px 28px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -306,15 +292,12 @@
 
     <!-- Ticket -->
     <div class="ticket-wrapper">
-        <!-- Dark pill banner floating above card -->
-        <div class="ticket-banner-pill">
-            <span class="ticket-type">1 Adult</span>
-            <span class="ticket-price">£3.00</span>
-        </div>
-
         <div class="ticket-card">
-            <!-- Thin progress indicator -->
-            <div class="progress-bar"></div>
+            <!-- Dark banner -->
+            <div class="ticket-banner-pill">
+                <span class="ticket-type">1 Adult</span>
+                <span class="ticket-price">£3.00</span>
+            </div>
 
             <!-- Body -->
             <div class="ticket-body">
@@ -670,21 +653,17 @@
 
 /* ── Clock + Countdown ── */
 (function () {
-    // Expiry: valid from 16:43 on 11 May 2026 + 60 min = 17:43:00
-    // Since today (12 May 2026) the original ticket is expired, we create
-    // a fresh expiry 60 minutes from NOW so the countdown is always live.
     const expiry = new Date(Date.now() + 60 * 60 * 1000);
+    let showTrack = false;
+    const timeEl = document.getElementById('current-time');
 
     function pad(n) { return String(n).padStart(2, '0'); }
 
     function tick() {
         const now = new Date();
+        const timeStr = pad(now.getHours()) + ':' + pad(now.getMinutes());
+        timeEl.textContent = showTrack ? 'Track' : timeStr;
 
-        // Current time
-        document.getElementById('current-time').textContent =
-            pad(now.getHours()) + ':' + pad(now.getMinutes());
-
-        // Countdown
         const diff = expiry - now;
         if (diff <= 0) {
             document.getElementById('countdown').textContent = 'Expired';
@@ -699,6 +678,16 @@
 
     tick();
     setInterval(tick, 1000);
+
+    setInterval(() => {
+        timeEl.style.transition = 'opacity 0.25s ease';
+        timeEl.style.opacity = '0';
+        setTimeout(() => {
+            showTrack = !showTrack;
+            tick();
+            timeEl.style.opacity = '1';
+        }, 250);
+    }, 3000);
 })();
 
 // Service Worker registration
