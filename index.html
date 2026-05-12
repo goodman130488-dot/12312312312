@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Your Ticket</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0f1e3d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="My Ticket">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #111827;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .screen {
+            width: 100%;
+            max-width: 430px;
+            min-height: 100vh;
+            background: #0f1e3d;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: #0f1e3d;
+            padding: 56px 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 16px;
+            width: 34px;
+            height: 34px;
+            border: 2.5px solid rgba(255,255,255,0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: rgba(255,255,255,0.85);
+            font-size: 15px;
+            font-weight: 600;
+            user-select: none;
+        }
+
+        /* ── Ticket card ── */
+        .ticket-wrapper {
+            padding: 0 12px 32px;
+            flex: 1;
+        }
+
+        .ticket-card {
+            background: #f5eeff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+        }
+
+        /* ── Ticket dark banner ── */
+        .ticket-banner {
+            background: #0f1e3d;
+            padding: 16px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ticket-type {
+            color: #ffffff;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .ticket-price {
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        /* ── Ticket body ── */
+        .ticket-body {
+            background: #f5eeff;
+            padding: 28px 20px 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        /* ── QR Code ── */
+        .qr-wrapper {
+            margin-bottom: 22px;
+        }
+
+        #qr-canvas {
+            display: block;
+            image-rendering: pixelated;
+        }
+
+        /* ── Route ── */
+        .route {
+            font-size: 21px;
+            font-weight: 800;
+            color: #0f1e3d;
+            text-align: center;
+            margin-bottom: 10px;
+            line-height: 1.25;
+        }
+
+        /* ── Valid from ── */
+        .valid-from {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .valid-from strong {
+            color: #374151;
+            font-weight: 600;
+        }
+
+        /* ── Animated pink time bar ── */
+        .time-bar {
+            width: 100%;
+            position: relative;
+            background: linear-gradient(135deg, #d6186a 0%, #f0308a 40%, #e8207e 60%, #c9115f 100%);
+            border-radius: 10px;
+            height: 60px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 180, 220, 0.25);
+        }
+
+        .bubble-1 {
+            width: 72px;
+            height: 72px;
+            left: -18px;
+            top: -18px;
+            animation: pulse 2.8s ease-in-out infinite;
+        }
+
+        .bubble-2 {
+            width: 50px;
+            height: 50px;
+            left: 28px;
+            bottom: -16px;
+            animation: pulse 3.2s ease-in-out infinite 0.6s;
+        }
+
+        .bubble-3 {
+            width: 58px;
+            height: 58px;
+            right: 32px;
+            top: -14px;
+            animation: pulse 2.5s ease-in-out infinite 1.1s;
+        }
+
+        .bubble-4 {
+            width: 46px;
+            height: 46px;
+            right: -8px;
+            bottom: -10px;
+            animation: pulse 3s ease-in-out infinite 0.3s;
+        }
+
+        .bubble-5 {
+            width: 36px;
+            height: 36px;
+            right: 90px;
+            bottom: -8px;
+            animation: pulse 2.7s ease-in-out infinite 1.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.25; }
+            50% { transform: scale(1.12); opacity: 0.38; }
+        }
+
+        .current-time {
+            font-size: 30px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.2);
+        }
+
+        /* ── Countdown ── */
+        .expires-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 16px;
+            padding: 0 2px;
+        }
+
+        .expires-label {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .expires-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1f2937;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Ticket ID ── */
+        .ticket-id {
+            background: #e4d9f5;
+            border-radius: 10px;
+            padding: 11px 16px;
+            font-size: 12.5px;
+            color: #4b5563;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 18px;
+            letter-spacing: 0.3px;
+            font-family: 'SF Mono', 'Fira Mono', monospace;
+        }
+
+        /* ── More details ── */
+        .more-details {
+            color: #10a37f;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+        }
+
+        .more-details-arrow {
+            font-size: 18px;
+            line-height: 1;
+            margin-top: 1px;
+        }
+    </style>
+</head>
+<body>
+<div class="screen">
+    <!-- Header -->
+    <div class="header">
+        <h1>Your Ticket</h1>
+        <div class="close-btn">&#x2715;</div>
+    </div>
+
+    <!-- Ticket -->
+    <div class="ticket-wrapper">
+        <div class="ticket-card">
+            <!-- Dark banner -->
+            <div class="ticket-banner">
+                <span class="ticket-type">1 Adult</span>
+                <span class="ticket-price">£3.00</span>
+            </div>
+
+            <!-- Body -->
+            <div class="ticket-body">
+                <!-- QR Code -->
+                <div class="qr-wrapper">
+                    <canvas id="qr-canvas"></canvas>
+                </div>
+
+                <!-- Route -->
+                <div class="route">Ash to Guildford single</div>
+
+                <!-- Valid from -->
+                <div class="valid-from">
+                    Valid from:&nbsp;<strong>16:43, 11 May 2026</strong>
+                </div>
+
+                <!-- Animated pink time bar -->
+                <div class="time-bar">
+                    <div class="bubble bubble-1"></div>
+                    <div class="bubble bubble-2"></div>
+                    <div class="bubble bubble-3"></div>
+                    <div class="bubble bubble-4"></div>
+                    <div class="bubble bubble-5"></div>
+                    <div class="current-time" id="current-time">--:--</div>
+                </div>
+
+                <!-- Countdown -->
+                <div class="expires-row">
+                    <span class="expires-label">Ticket expires in</span>
+                    <span class="expires-value" id="countdown">0h : 00m : 00s</span>
+                </div>
+
+                <!-- Ticket ID -->
+                <div class="ticket-id">2079-20260510145630127-D9PZq</div>
+
+                <!-- More details -->
+                <div class="more-details">
+                    More details
+                    <span class="more-details-arrow">›</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ── Tiny QR-code generator (pure JS, no deps) ── */
+/* Based on the QR encoding standard — generates a QR matrix then draws to canvas */
+(function () {
+    // We'll use a well-known minimal QR encoder approach.
+    // For simplicity: encode the ticket ID as QR using the qrcode-generator library inline pattern.
+    // Since we can't load CDN in all contexts, we draw a deterministic pattern from the data.
+
+    const TICKET_DATA = "2079-20260510145630127-D9PZq";
+
+    // Full QR encoder using the qrcode-generator algorithm (Reed-Solomon, mode byte)
+    // Implementing a minimal version for alphanumeric/byte mode, version 3, ECC M
+
+    function drawQR(canvasEl, text) {
+        // Generate QR using a simple approach via data URI trick
+        // We'll encode using a small self-contained QR library
+
+        const size = 200;
+        canvasEl.width = size;
+        canvasEl.height = size;
+        const ctx = canvasEl.getContext('2d');
+
+        // Use the built-in QR generation via the pattern below
+        // We'll implement a proper minimal QR generator
+
+        const qr = createQR(text, 2); // ECC level M
+        if (!qr) return;
+
+        const modules = qr.modules;
+        const n = modules.length;
+        const cellSize = size / n;
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, size, size);
+
+        ctx.fillStyle = '#000000';
+        for (let r = 0; r < n; r++) {
+            for (let c = 0; c < n; c++) {
+                if (modules[r][c]) {
+                    ctx.fillRect(
+                        Math.floor(c * cellSize),
+                        Math.floor(r * cellSize),
+                        Math.ceil(cellSize),
+                        Math.ceil(cellSize)
+                    );
+                }
+            }
+        }
+    }
+
+    /* ── Minimal QR Code Generator ── */
+    function createQR(data, ecLevel) {
+        // ecLevel: 1=L, 2=M, 3=Q, 4=H
+        try {
+            return qrEncode(data, ecLevel);
+        } catch(e) {
+            console.error('QR gen error', e);
+            return null;
+        }
+    }
+
+    // ---- Reed-Solomon GF(256) arithmetic ----
+    const GF_EXP = new Uint8Array(512);
+    const GF_LOG = new Uint8Array(256);
+    (function initGF() {
+        let x = 1;
+        for (let i = 0; i < 255; i++) {
+            GF_EXP[i] = x;
+            GF_LOG[x] = i;
+            x <<= 1;
+            if (x & 0x100) x ^= 0x11d;
+        }
+        for (let i = 255; i < 512; i++) GF_EXP[i] = GF_EXP[i - 255];
+    })();
+
+    function gfMul(a, b) {
+        if (a === 0 || b === 0) return 0;
+        return GF_EXP[(GF_LOG[a] + GF_LOG[b]) % 255];
+    }
+
+    function gfPow(x, power) {
+        return GF_EXP[(GF_LOG[x] * power) % 255];
+    }
+
+    function rsGeneratorPoly(degree) {
+        let g = [1];
+        for (let i = 0; i < degree; i++) {
+            const factor = [1, gfPow(2, i)];
+            const result = new Array(g.length + factor.length - 1).fill(0);
+            for (let j = 0; j < g.length; j++)
+                for (let k = 0; k < factor.length; k++)
+                    result[j + k] ^= gfMul(g[j], factor[k]);
+            g = result;
+        }
+        return g;
+    }
+
+    function rsEncode(data, ecCount) {
+        const gen = rsGeneratorPoly(ecCount);
+        const msg = data.slice();
+        for (let i = 0; i < ecCount; i++) msg.push(0);
+        for (let i = 0; i < data.length; i++) {
+            const coeff = msg[i];
+            if (coeff !== 0) {
+                for (let j = 1; j < gen.length; j++)
+                    msg[i + j] ^= gfMul(gen[j], coeff);
+            }
+        }
+        return msg.slice(data.length);
+    }
+
+    // ---- QR version/ECC tables (version 1-10 only, ECC M) ----
+    // [version]: { dataBytes, ecBytesPerBlock, blocks }
+    const QR_SPEC = {
+        1:  { dataBytes: 16,  ecBytesPerBlock: 10, blocks: 1 },
+        2:  { dataBytes: 28,  ecBytesPerBlock: 16, blocks: 1 },
+        3:  { dataBytes: 44,  ecBytesPerBlock: 26, blocks: 1 },
+        4:  { dataBytes: 64,  ecBytesPerBlock: 18, blocks: 2 },
+        5:  { dataBytes: 86,  ecBytesPerBlock: 24, blocks: 2 },
+        6:  { dataBytes: 108, ecBytesPerBlock: 16, blocks: 4 },
+        7:  { dataBytes: 124, ecBytesPerBlock: 18, blocks: 4 },
+        8:  { dataBytes: 154, ecBytesPerBlock: 22, blocks: 4 },
+        9:  { dataBytes: 182, ecBytesPerBlock: 22, blocks: 5 },
+        10: { dataBytes: 216, ecBytesPerBlock: 26, blocks: 6 },
+    };
+
+    function qrEncode(text, ecLevel) {
+        // Encode in byte mode
+        const bytes = [];
+        for (let i = 0; i < text.length; i++) bytes.push(text.charCodeAt(i));
+
+        // Find version
+        let version = 1;
+        while (version <= 10 && QR_SPEC[version].dataBytes < bytes.length + 3) version++;
+        if (version > 10) throw new Error('Data too long');
+
+        const spec = QR_SPEC[version];
+        const size = version * 4 + 17;
+
+        // Build bit stream
+        const bits = [];
+        function addBits(val, len) {
+            for (let i = len - 1; i >= 0; i--) bits.push((val >> i) & 1);
+        }
+
+        addBits(0b0100, 4); // byte mode
+        addBits(bytes.length, 8);
+        for (const b of bytes) addBits(b, 8);
+
+        // Terminator + padding
+        for (let i = 0; i < 4 && bits.length < spec.dataBytes * 8; i++) bits.push(0);
+        while (bits.length % 8 !== 0) bits.push(0);
+        let padIdx = 0;
+        const pads = [0xEC, 0x11];
+        while (bits.length < spec.dataBytes * 8) {
+            addBits(pads[padIdx % 2], 8);
+            padIdx++;
+        }
+
+        // Convert bits to bytes
+        const dataBytes = [];
+        for (let i = 0; i < bits.length; i += 8) {
+            let b = 0;
+            for (let j = 0; j < 8; j++) b = (b << 1) | (bits[i + j] || 0);
+            dataBytes.push(b);
+        }
+
+        // Interleave blocks + generate EC
+        const blockSize = Math.floor(dataBytes.length / spec.blocks);
+        const blocks = [];
+        const ecBlocks = [];
+        for (let i = 0; i < spec.blocks; i++) {
+            const start = i * blockSize;
+            const end = i === spec.blocks - 1 ? dataBytes.length : start + blockSize;
+            const block = dataBytes.slice(start, end);
+            blocks.push(block);
+            ecBlocks.push(rsEncode(block, spec.ecBytesPerBlock));
+        }
+
+        const interleaved = [];
+        const maxLen = Math.max(...blocks.map(b => b.length));
+        for (let i = 0; i < maxLen; i++)
+            for (const b of blocks) if (i < b.length) interleaved.push(b[i]);
+        for (let i = 0; i < spec.ecBytesPerBlock; i++)
+            for (const e of ecBlocks) interleaved.push(e[i]);
+
+        // Build modules matrix
+        const modules = Array.from({ length: size }, () => new Array(size).fill(null));
+        const isFunction = Array.from({ length: size }, () => new Array(size).fill(false));
+
+        function setModule(r, c, dark) {
+            modules[r][c] = dark;
+            isFunction[r][c] = true;
+        }
+
+        // Finder patterns
+        function drawFinder(r, c) {
+            for (let dr = -1; dr <= 7; dr++) {
+                for (let dc = -1; dc <= 7; dc++) {
+                    if (r + dr < 0 || r + dr >= size || c + dc < 0 || c + dc >= size) continue;
+                    const inOuter = dr >= 0 && dr <= 6 && dc >= 0 && dc <= 6;
+                    const inInner = dr >= 2 && dr <= 4 && dc >= 2 && dc <= 4;
+                    const onRing = dr === 0 || dr === 6 || dc === 0 || dc === 6;
+                    setModule(r + dr, c + dc, inInner || (inOuter && onRing));
+                }
+            }
+        }
+        drawFinder(0, 0);
+        drawFinder(0, size - 7);
+        drawFinder(size - 7, 0);
+
+        // Separators are already handled (they're false by default and marked as function)
+        function markSep(r, c) {
+            if (r >= 0 && r < size && c >= 0 && c < size && !isFunction[r][c]) {
+                setModule(r, c, false);
+            }
+        }
+        for (let i = 0; i <= 7; i++) {
+            markSep(7, i); markSep(i, 7);
+            markSep(7, size - 8 + i); markSep(i, size - 8);
+            markSep(size - 8, i); markSep(size - 1 - i, 7);
+        }
+
+        // Timing patterns
+        for (let i = 8; i < size - 8; i++) {
+            setModule(6, i, i % 2 === 0);
+            setModule(i, 6, i % 2 === 0);
+        }
+
+        // Dark module
+        setModule(4 * version + 9, 8, true);
+
+        // Alignment patterns (version >= 2)
+        const alignPos = {
+            2: [6, 18], 3: [6, 22], 4: [6, 26], 5: [6, 30],
+            6: [6, 34], 7: [6, 22, 38], 8: [6, 24, 42], 9: [6, 26, 46], 10: [6, 28, 50]
+        };
+        if (alignPos[version]) {
+            const pos = alignPos[version];
+            for (const r of pos) {
+                for (const c of pos) {
+                    if (isFunction[r][c]) continue;
+                    for (let dr = -2; dr <= 2; dr++) {
+                        for (let dc = -2; dc <= 2; dc++) {
+                            const dark = Math.max(Math.abs(dr), Math.abs(dc)) !== 1;
+                            setModule(r + dr, c + dc, dark);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Format info (mask pattern 2: (row // 2 + col // 3) % 2 == 0 → mask)
+        // ECC M = 0b00, mask = 2 → format = 0b00010
+        // Format string for M+mask2: bits = 10011000010110
+        const fmtBits = [1,0,0,1,1,0,0,0,0,1,0,1,1,0];
+        const fmtPos1r = [8,8,8,8,8,8,8,8,7,5,4,3,2,1,0];
+        const fmtPos1c = [0,1,2,3,4,5,7,8,8,8,8,8,8,8,8];
+        for (let i = 0; i < 14; i++) {
+            setModule(fmtPos1r[i], fmtPos1c[i], fmtBits[i] === 1);
+            // Copy format around second finder
+            const r2 = fmtPos1r[i] < 8 ? size - 1 - fmtPos1r[i] : fmtPos1r[i];
+            const c2 = fmtPos1c[i] < 8 ? size - 8 + fmtPos1c[i] : fmtPos1c[i] - size + 8;
+            if (r2 < size && c2 < size) setModule(r2, c2, fmtBits[i] === 1);
+        }
+
+        // Reserve format info areas
+        for (let i = 0; i <= 8; i++) {
+            if (!isFunction[8][i]) isFunction[8][i] = true;
+            if (!isFunction[i][8]) isFunction[i][8] = true;
+        }
+        for (let i = size - 8; i < size; i++) {
+            isFunction[8][i] = true;
+            isFunction[i][8] = true;
+        }
+
+        // Data placement
+        let bitIdx = 0;
+        const allBits = [];
+        for (const b of interleaved) for (let i = 7; i >= 0; i--) allBits.push((b >> i) & 1);
+
+        let right = size - 1;
+        let goingUp = true;
+        while (right >= 1) {
+            if (right === 6) right--;
+            for (let vert = 0; vert < size; vert++) {
+                const r = goingUp ? size - 1 - vert : vert;
+                for (let col = 0; col <= 1; col++) {
+                    const c = right - col;
+                    if (isFunction[r][c]) continue;
+                    const bit = bitIdx < allBits.length ? allBits[bitIdx++] : 0;
+                    // Mask pattern 2: (Math.floor(r/2) + Math.floor(c/3)) % 2 === 0
+                    const mask = (Math.floor(r / 2) + Math.floor(c / 3)) % 2 === 0;
+                    modules[r][c] = mask ? bit === 0 : bit === 1;
+                }
+            }
+            goingUp = !goingUp;
+            right -= 2;
+        }
+
+        return { modules, size };
+    }
+
+    // Draw on load
+    const canvas = document.getElementById('qr-canvas');
+    drawQR(canvas, TICKET_DATA);
+})();
+
+/* ── Clock + Countdown ── */
+(function () {
+    // Expiry: valid from 16:43 on 11 May 2026 + 60 min = 17:43:00
+    // Since today (12 May 2026) the original ticket is expired, we create
+    // a fresh expiry 60 minutes from NOW so the countdown is always live.
+    const expiry = new Date(Date.now() + 60 * 60 * 1000);
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function tick() {
+        const now = new Date();
+
+        // Current time
+        document.getElementById('current-time').textContent =
+            pad(now.getHours()) + ':' + pad(now.getMinutes());
+
+        // Countdown
+        const diff = expiry - now;
+        if (diff <= 0) {
+            document.getElementById('countdown').textContent = 'Expired';
+            return;
+        }
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        document.getElementById('countdown').textContent =
+            h + 'h : ' + pad(m) + 'm : ' + pad(s) + 's';
+    }
+
+    tick();
+    setInterval(tick, 1000);
+})();
+
+// Service Worker registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+    });
+}
+</script>
+</body>
+</html>
